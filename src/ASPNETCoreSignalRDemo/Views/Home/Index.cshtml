@@ -1,0 +1,42 @@
+﻿<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="../Scripts/jquery.signalR-2.2.0.js"></script>
+<script src="../signalr/hubs"></script>
+
+<script>
+    $(function () {
+        var poll = $.connection.pollHub;
+       
+        poll.client.displayPoll = function () {
+            LoadActivePoll();
+        };
+
+        $.connection.hub.start();
+        LoadActivePoll();
+    });
+
+    function LoadActivePoll() {
+        var $div = $("#divQuestion");
+        var $tbl = $("#tblPoll");
+        $.ajax({
+            url: '../api/poll',
+            type: 'GET',
+            datatype: 'json',
+            success: function (data) {
+                if (data.length > 0) {
+                    $div.html('<h3>' + data[0].question + '</h3>');
+                    $tbl.empty();
+                    var rows = [];
+                    var poll = data[0].pollOption;
+                    for (var i = 0; i < poll.length; i++) {
+                        rows.push('<tbody><tr><td>' + poll[i].answers + '</td><td><input name="poll" type="radio"/></td></tr></tbody>');
+                    }
+                    $tbl.append(rows.join(''));
+                }
+            }
+        });
+    }
+</script>
+
+<h2>ASP.NET Core Online Poll System with SignalR 2</h2>
+<div id="divQuestion"></div>
+<table id="tblPoll"></table>

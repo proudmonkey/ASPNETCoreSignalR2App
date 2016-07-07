@@ -1,0 +1,31 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model ASPNETCoreSignalRDemo.Models.ViewModels.AddPollViewModel
+
+<h2>Add a New Poll</h2>
+
+<form asp-controller="Home" asp-action="AddPoll" method="post" role="form">
+    <div>
+        @{ 
+            if (ViewBag.Message != null) { @ViewBag.Message; }
+        }
+        <div asp-validation-summary="All"></div>
+        <div>
+            <label asp-for="Question"></label>
+            <div>
+                <input asp-for="Question"/>
+            </div>
+        </div>
+        <div>
+            <label asp-for="Answer"></label>
+            <div>
+                <textarea asp-for="Answer"></textarea>
+            </div>
+        </div>
+        <div>
+            <div>
+                <input type="submit" value="Add"/>
+            </div>
+        </div>
+    </div>
+</form>
+
