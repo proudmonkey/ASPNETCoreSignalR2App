@@ -62,5 +62,56 @@ namespace ASPNETCoreSignalRDemo.Models
 
             return true;
         }
+
+        private int GetPollOptionVotes(int pollOptionID)
+        {
+            return _db.PollOption
+                    .Where(o => o.PollOptionId.Equals(pollOptionID))
+                    .Select(o => o.Vote).FirstOrDefault();
+            
+        }
+
+        public void UpdatePollOptionVotes(int pollOptionID)
+        { 
+            var option = _db.PollOption.Where(o => o.PollOptionId.Equals(pollOptionID));
+            if (option.Any())
+            {
+                int currentVotes = GetPollOptionVotes(pollOptionID);
+
+                if (currentVotes == 0)
+                    currentVotes = 1;
+                else
+                    currentVotes++;
+
+                PollOption PO = option.SingleOrDefault();
+                PO.Vote = currentVotes;
+                _db.SaveChanges();
+            }
+        }
+
+        public IEnumerable<VoteResultViewModel> GetPollVoteResults(int pollID = 0)
+        {
+            if (pollID == 0)
+            {
+                var poll = _db.Poll.Where(o => o.Active.Equals(true));
+                if (poll.Any())
+                    pollID = poll.FirstOrDefault().PollId;
+            }
+
+            var pollOption = _db.PollOption.Where(o => o.PollId.Equals(pollID));
+            if (pollOption.Any())
+            {
+                return pollOption.Select(o => new VoteResultViewModel
+                {
+                    Choice = o.Answers,
+                    Vote = o.Vote
+                });
+            }
+            return Enumerable.Empty<VoteResultViewModel>();
+        }
     }
 }
+
+
+
+

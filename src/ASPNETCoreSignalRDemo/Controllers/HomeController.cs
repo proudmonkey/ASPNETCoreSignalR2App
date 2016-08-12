@@ -31,10 +31,18 @@ namespace ASPNETCoreSignalRDemo.Controllers
                 if (_pollManager.AddPoll(poll))
                 {
                     ViewBag.Message = "Poll added successfully!";
-                    //ASPNETCoreSignalRDemo.Hubs.PollHub.FetchPoll();
+                    ASPNETCoreSignalRDemo.Hubs.PollHub.FetchPoll();
                 }      
             }
             return View(poll);
         }
+
+        public IActionResult Result(int pollID = 0)
+        {
+            ViewBag.PollID = pollID;
+            return View();
+        }
     }
 }
+
+

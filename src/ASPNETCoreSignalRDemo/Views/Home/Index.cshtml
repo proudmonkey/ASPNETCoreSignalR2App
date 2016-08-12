@@ -3,40 +3,84 @@
 <script src="../signalr/hubs"></script>
 
 <script>
+    var poll = $.connection.pollHub;
     $(function () {
-        var poll = $.connection.pollHub;
-       
         poll.client.displayPoll = function () {
             LoadActivePoll();
         };
 
         $.connection.hub.start();
         LoadActivePoll();
+
+        $("#btnSubmit").on("click", function () {
+            var selectedOption = $('input[name=poll]:checked', '#tblPoll');
+            if (selectedOption.val()) {
+                var row = $(selectedOption).closest('tr');
+                var choice = row.find("td:eq(0)").html().trim();
+                AddVote(choice);
+            }
+            else {
+                alert("Please take your vote.");
+            }
+        });
+
+        $("#lnkView").on("click", function () {
+            this.href = this.href + '?pollID=' + $("#hidPollID").val();
+        });
     });
 
     function LoadActivePoll() {
         var $div = $("#divQuestion");
         var $tbl = $("#tblPoll");
+        var $hid = $("#hidPollID");
+        var $btn = $("#btnSubmit");
         $.ajax({
             url: '../api/poll',
             type: 'GET',
             datatype: 'json',
             success: function (data) {
                 if (data.length > 0) {
+                    $btn.show();
                     $div.html('<h3>' + data[0].question + '</h3>');
+                    $hid.val(data[0].pollID);
                     $tbl.empty();
                     var rows = [];
                     var poll = data[0].pollOption;
+
+                    $tbl.append('<tbody>');
                     for (var i = 0; i < poll.length; i++) {
-                        rows.push('<tbody><tr><td>' + poll[i].answers + '</td><td><input name="poll" type="radio"/></td></tr></tbody>');
+                        rows.push('<tr>'
+                                  +'<td style="display:none;">' + poll[i].pollOptionId + '</td>'
+                                  +'<td>' + poll[i].answers + '</td>'
+                                  +'<td><input name="poll" type="radio"/></td>'
+                                  +'</tr>');
                     }
                     $tbl.append(rows.join(''));
+                    $tbl.append('</tbody>');
                 }
             }
         });
     }
+
+    function AddVote(pollOptionID) {
+        $.ajax({
+            url: '../api/poll/AddVote',
+            type: 'POST',
+            datatype: 'json',
+            data: { id: pollOptionID },
+            success: function (data) {
+                poll.server.fetchVoteResult();
+                alert("Thank your for voting!");
+            }
+        });
+
+    }
+
 </script>
 
 <h2>ASP.NET Core Online Poll System with SignalR 2</h2>
 <div id="divQuestion"></div>
 <table id="tblPoll"></table>
+<button type="button" id="btnSubmit" style="display:none">Vote</button>
+<input type="hidden" id="hidPollID" />
+@Html.ActionLink("View Results", "Result", "Home",null,new {  @id="lnkView"})  

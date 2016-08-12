@@ -9,5 +9,13 @@ namespace ASPNETCoreSignalRDemo.Hubs
             IHubContext context = GlobalHost.ConnectionManager.GetHubContext<PollHub>();
             context.Clients.All.displayPoll();
         }
+
+        public void FetchVoteResult()
+        {
+            IHubContext context = GlobalHost.ConnectionManager.GetHubContext<PollHub>();
+            context.Clients.All.viewResults();
+        }
     }
 }
+
+

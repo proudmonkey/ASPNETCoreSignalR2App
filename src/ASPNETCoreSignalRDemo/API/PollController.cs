@@ -22,6 +22,20 @@ namespace ASPNETCoreSignalRDemo.API
            var res =  _pollManager.GetActivePoll();
            return res.ToList();
         }
-    
+
+        [HttpPost("{id}")]
+        public IActionResult AddVote(int id)
+        {
+            _pollManager.UpdatePollOptionVotes(id);
+            return new OkResult();
+        }
+
+        [HttpGet("{id}")]
+        public IEnumerable<VoteResultViewModel> GetVoteResults(int id)
+        {
+            return _pollManager.GetPollVoteResults(id).ToList();
+        }
+
     }
 }
+

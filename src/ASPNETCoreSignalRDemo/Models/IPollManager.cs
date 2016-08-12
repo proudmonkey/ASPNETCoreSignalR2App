@@ -7,5 +7,7 @@ namespace ASPNETCoreSignalRDemo.Models
     {
         bool AddPoll(AddPollViewModel pollModel);
         IEnumerable<PollDetailsViewModel> GetActivePoll();
+        void UpdatePollOptionVotes(int pollOptionID);
+        IEnumerable<VoteResultViewModel> GetPollVoteResults(int pollID);
     }
 }
